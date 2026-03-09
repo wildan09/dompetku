@@ -1,17 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { supabase } from '@/lib/supabase'
 
 const routes = [
   {
     path: '/login',
     name: 'Login',
     component: () => import('@/pages/auth/LoginPage.vue'),
-    meta: { requiresAuth: false, layout: 'auth' }
-  },
-  {
-    path: '/register',
-    name: 'Register',
-    component: () => import('@/pages/auth/RegisterPage.vue'),
     meta: { requiresAuth: false, layout: 'auth' }
   },
   {
@@ -56,6 +49,11 @@ const routes = [
     component: () => import('@/pages/ProfilePage.vue'),
     meta: { requiresAuth: true }
   },
+  // Redirect /register to /login
+  {
+    path: '/register',
+    redirect: '/login'
+  },
 ]
 
 const router = createRouter({
@@ -63,9 +61,9 @@ const router = createRouter({
   routes,
 })
 
-// Auth Guard
+// Auth Guard - uses localStorage session
 router.beforeEach(async (to, from, next) => {
-  const { data: { session } } = await supabase.auth.getSession()
+  const session = localStorage.getItem('dompetku_session')
 
   if (to.meta.requiresAuth && !session) {
     next('/login')
