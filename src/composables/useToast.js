@@ -1,0 +1,23 @@
+import { ref } from 'vue'
+
+/**
+ * Simple toast notification system
+ */
+const toasts = ref([])
+let toastId = 0
+
+export function useToast() {
+  function show(message, type = 'info', duration = 3000) {
+    const id = ++toastId
+    toasts.value.push({ id, message, type })
+    setTimeout(() => {
+      toasts.value = toasts.value.filter(t => t.id !== id)
+    }, duration)
+  }
+
+  function success(message) { show(message, 'success') }
+  function error(message) { show(message, 'error') }
+  function info(message) { show(message, 'info') }
+
+  return { toasts, show, success, error, info }
+}
